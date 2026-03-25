@@ -1,149 +1,127 @@
 import SwiftUI
+import WatchKit
 
-// MARK: - ApprovalView
-
-/// Decision mode: presented as a sheet so the terminal remains visible underneath.
 struct ApprovalView: View {
     @EnvironmentObject private var session: WatchViewState
     @Environment(\.dismiss) private var dismiss
 
     let request: ApprovalRequest
 
-    @State private var flashColor: Color? = nil
     @State private var hasResponded = false
 
     var body: some View {
-        ZStack {
-            Theme.Background.overlay.ignoresSafeArea()
+        ScrollView {
+            VStack(alignment: .leading, spacing: 10) {
+                // Question: "Do you want to make this edit to file.swift?"
+                Text("Do you want to \(request.toolName.lowercased())?")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(.white)
 
-            // Flash overlay for approve/deny feedback
-            if let color = flashColor {
-                color.opacity(0.3)
-                    .ignoresSafeArea()
-                    .transition(.opacity)
-            }
+                // File/action detail
+                Text(request.actionSummary)
+                    .font(.system(size: 12, design: .monospaced))
+                    .foregroundColor(Theme.Accent.approval)
+                    .lineLimit(3)
 
-            VStack(spacing: 16) {
-                Spacer()
+                Divider().background(Theme.Text.dimmed)
 
-                // Header
-                Text("Claude wants to:")
-                    .font(.system(size: 13))
-                    .foregroundColor(Theme.Text.secondary)
-
-                // Action summary
-                ScrollView {
-                    Text(request.actionSummary)
-                        .font(.system(size: 15, design: .monospaced))
-                        .foregroundColor(Theme.Accent.approval)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .frame(maxHeight: 100)
-
-                Spacer()
-
-                // Approve / Deny buttons
-                HStack(spacing: 8) {
-                    // Deny
-                    Button {
-                        respondDeny()
-                    } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: "xmark")
-                                .font(.system(size: 16, weight: .bold))
-                            Text("Deny")
-                                .font(.system(size: 15, weight: .semibold))
-                        }
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Theme.Accent.error)
-                        )
+                // Option 1: Yes
+                Button {
+                    respond(approved: true)
+                } label: {
+                    HStack(spacing: 6) {
+                        Text("1.")
+                            .font(.system(size: 12, design: .monospaced))
+                            .foregroundColor(Theme.Text.secondary)
+                        Text("Yes")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundColor(.white)
+                        Spacer()
                     }
-                    .buttonStyle(.plain)
-                    .disabled(hasResponded)
-
-                    // Approve
-                    Button {
-                        respondApprove()
-                    } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: "checkmark")
-                                .font(.system(size: 16, weight: .bold))
-                            Text("OK")
-                                .font(.system(size: 15, weight: .semibold))
-                        }
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Theme.Accent.success)
-                        )
-                    }
-                    .buttonStyle(.plain)
-                    .disabled(hasResponded)
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, 10)
+                    .background(Theme.Accent.success.opacity(0.2))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Theme.Accent.success.opacity(0.5), lineWidth: 1)
+                    )
                 }
+                .buttonStyle(.plain)
+                .disabled(hasResponded)
+
+                // Option 2: Yes, allow all
+                Button {
+                    respond(approved: true, allowAll: true)
+                } label: {
+                    HStack(spacing: 6) {
+                        Text("2.")
+                            .font(.system(size: 12, design: .monospaced))
+                            .foregroundColor(Theme.Text.secondary)
+                        Text("Yes, allow all")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundColor(.white)
+                        Spacer()
+                    }
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, 10)
+                    .background(Theme.Text.primary.opacity(0.15))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Theme.Text.primary.opacity(0.4), lineWidth: 1)
+                    )
+                }
+                .buttonStyle(.plain)
+                .disabled(hasResponded)
+
+                // Option 3: No
+                Button {
+                    respond(approved: false)
+                } label: {
+                    HStack(spacing: 6) {
+                        Text("3.")
+                            .font(.system(size: 12, design: .monospaced))
+                            .foregroundColor(Theme.Text.secondary)
+                        Text("No")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundColor(.white)
+                        Spacer()
+                    }
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, 10)
+                    .background(Theme.Accent.error.opacity(0.15))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Theme.Accent.error.opacity(0.4), lineWidth: 1)
+                    )
+                }
+                .buttonStyle(.plain)
+                .disabled(hasResponded)
             }
-            .padding(.horizontal, 12)
-            .padding(.bottom, 8)
+            .padding(.horizontal, 8)
+            .padding(.top, 4)
         }
-        .onChange(of: request.status) { newStatus in
-            // If the approval expired server-side, auto-dismiss
-            if newStatus == .expired {
-                dismiss()
-            }
-        }
+        .background(Theme.Background.primary)
     }
 
-    // MARK: - Actions
-
-    private func respondApprove() {
+    private func respond(approved: Bool, allowAll: Bool = false) {
         guard !hasResponded else { return }
         hasResponded = true
 
-        HapticManager.approvalNeeded() // success haptic
-        WKInterfaceDevice.current().play(.success)
+        WKInterfaceDevice.current().play(approved ? .success : .failure)
+        session.respondToPermission(approved: approved)
 
-        withAnimation(.easeIn(duration: 0.15)) {
-            flashColor = Theme.Accent.success
-        }
-
-        session.respondToApproval(requestId: request.id, approved: true)
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            dismiss()
-        }
-    }
-
-    private func respondDeny() {
-        guard !hasResponded else { return }
-        hasResponded = true
-
-        WKInterfaceDevice.current().play(.failure)
-
-        withAnimation(.easeIn(duration: 0.15)) {
-            flashColor = Theme.Accent.error
-        }
-
-        session.respondToApproval(requestId: request.id, approved: false)
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             dismiss()
         }
     }
 }
 
-// MARK: - Preview
-
 #Preview {
     ApprovalView(
-        request: ApprovalRequest(
-            toolName: "bash",
-            actionSummary: "Run: rm -rf node_modules && npm install"
-        )
+        request: ApprovalRequest(toolName: "Edit", actionSummary: "Edit index.css")
     )
     .environmentObject(WatchViewState.shared)
 }

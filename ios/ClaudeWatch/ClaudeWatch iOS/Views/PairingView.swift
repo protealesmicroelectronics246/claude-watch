@@ -37,14 +37,7 @@ struct PairingView: View {
     // MARK: - Subviews
 
     private var mascotIcon: some View {
-        RoundedRectangle(cornerRadius: 16)
-            .fill(Color.claudeOrange)
-            .frame(width: 64, height: 64)
-            .overlay(
-                Text("C")
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
-            )
+        ClaudeMascot(size: 64)
     }
 
     private var titleSection: some View {

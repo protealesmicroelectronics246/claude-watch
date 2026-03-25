@@ -1,71 +1,130 @@
 import SwiftUI
 
-// MARK: - OnboardingView
-
-/// First-launch view shown when the watch is not yet paired with the iPhone app.
 struct OnboardingView: View {
-    @State private var isPulsing = false
+    @EnvironmentObject private var session: WatchViewState
+    @StateObject private var bridge = WatchBridgeClient.shared
+
+    @State private var code = ""
+    @State private var isSearching = false
+    @State private var isConnecting = false
+    @State private var error: String?
+    @State private var bridgeURL: URL?
+    @FocusState private var codeFocused: Bool
 
     var body: some View {
-        ZStack {
-            Theme.Background.primary.ignoresSafeArea()
+        ScrollView {
+            VStack(spacing: 10) {
+                ClaudeMascot(size: 30)
 
-            VStack(spacing: 16) {
-                Spacer()
-
-                // Large mascot placeholder (48pt)
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(Theme.Text.primary)
-                    .frame(width: 48, height: 48)
-                    .overlay(
-                        Text("C")
-                            .font(.system(size: 28, weight: .bold, design: .rounded))
-                            .foregroundColor(.black)
-                    )
-                    .scaleEffect(isPulsing ? 1.08 : 1.0)
-                    .opacity(isPulsing ? 0.8 : 1.0)
-                    .animation(
-                        .easeInOut(duration: 1.5).repeatForever(autoreverses: true),
-                        value: isPulsing
-                    )
-
-                Text("Welcome to\nClaude Watch")
-                    .font(.system(size: 17, weight: .bold))
+                Text("Claude Watch")
+                    .font(.system(size: 14, weight: .bold))
                     .foregroundColor(Theme.Text.primary)
-                    .multilineTextAlignment(.center)
 
-                Text("Open the Claude Watch app on your iPhone and pair with your Mac")
-                    .font(.system(size: 13))
-                    .foregroundColor(Theme.Text.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 8)
-
-                Spacer()
-
-                // Waiting indicator
-                HStack(spacing: 6) {
-                    ProgressView()
-                        .tint(Theme.Text.secondary)
-                        .scaleEffect(0.8)
-
-                    Text("Waiting for connection...")
+                if isSearching {
+                    HStack(spacing: 4) {
+                        ProgressView().scaleEffect(0.6)
+                        Text("Finding bridge...")
+                            .font(.system(size: 11))
+                            .foregroundColor(Theme.Text.secondary)
+                    }
+                } else if bridgeURL != nil {
+                    // Bridge found — show code entry
+                    Text("Enter pairing code")
                         .font(.system(size: 11))
                         .foregroundColor(Theme.Text.secondary)
+
+                    TextField("000000", text: $code)
+                        .font(.system(size: 20, weight: .bold, design: .monospaced))
+                        .foregroundColor(Theme.Text.primary)
+                        .multilineTextAlignment(.center)
+                        .textContentType(.oneTimeCode)
+                        .focused($codeFocused)
+                        .onChange(of: code) { _, newValue in
+                            // Only allow digits, max 6
+                            let filtered = String(newValue.filter { $0.isNumber }.prefix(6))
+                            if filtered != newValue { code = filtered }
+                            if filtered.count == 6 { submitCode(filtered) }
+                        }
+
+                    if isConnecting {
+                        HStack(spacing: 4) {
+                            ProgressView().scaleEffect(0.6)
+                            Text("Pairing...")
+                                .font(.system(size: 11))
+                                .foregroundColor(Theme.Text.secondary)
+                        }
+                    }
+                } else {
+                    // No bridge found
+                    Text("Start bridge on Mac:")
+                        .font(.system(size: 11))
+                        .foregroundColor(Theme.Text.secondary)
+                    Text("node server.js")
+                        .font(.system(size: 11, design: .monospaced))
+                        .foregroundColor(Theme.Text.primary)
+
+                    Button("Retry") { searchForBridge() }
+                        .font(.system(size: 12))
+                        .foregroundColor(Theme.Text.primary)
                 }
 
-                Spacer()
-                    .frame(height: 8)
+                if let error {
+                    Text(error)
+                        .font(.system(size: 10))
+                        .foregroundColor(Theme.Accent.error)
+                        .multilineTextAlignment(.center)
+                }
             }
-            .padding(.horizontal, 12)
+            .padding(.horizontal, 8)
         }
-        .onAppear {
-            isPulsing = true
+        .background(Theme.Background.primary)
+        .onAppear { searchForBridge() }
+    }
+
+    private func searchForBridge() {
+        isSearching = true
+        error = nil
+        Task {
+            let url = await bridge.discover()
+            await MainActor.run {
+                isSearching = false
+                bridgeURL = url
+                if url != nil {
+                    codeFocused = true
+                }
+            }
+        }
+    }
+
+    private func submitCode(_ code: String) {
+        guard let url = bridgeURL, !isConnecting else { return }
+        isConnecting = true
+        error = nil
+
+        Task {
+            do {
+                try await bridge.pair(baseURL: url, code: code)
+                await MainActor.run {
+                    session.isPaired = true
+                    session.sessionState = SessionState(
+                        connection: .connected, activity: .idle,
+                        machineName: "Mac", modelName: nil,
+                        workingDirectory: nil,
+                        elapsedSeconds: 0, filesChanged: 0, linesAdded: 0,
+                        transportMode: .lan
+                    )
+                    session.appendLine(TerminalLine(text: "Connected to bridge", type: .system))
+                    session.startEventStream()
+                }
+            } catch {
+                await MainActor.run {
+                    self.isConnecting = false
+                    self.error = error.localizedDescription
+                    self.code = ""
+                }
+            }
         }
     }
 }
 
-// MARK: - Preview
-
-#Preview {
-    OnboardingView()
-}
+#Preview { OnboardingView().environmentObject(WatchViewState.shared) }

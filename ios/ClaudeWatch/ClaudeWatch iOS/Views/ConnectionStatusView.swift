@@ -58,15 +58,7 @@ struct ConnectionStatusView: View {
 
     private var header: some View {
         HStack(spacing: 10) {
-            // Mascot
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color.claudeOrange)
-                .frame(width: 32, height: 32)
-                .overlay(
-                    Text("C")
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
-                        .foregroundStyle(.white)
-                )
+            ClaudeMascot(size: 32)
 
             Text("Claude Watch")
                 .font(.system(size: 17, weight: .bold))

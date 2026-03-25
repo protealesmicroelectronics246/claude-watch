@@ -9,6 +9,11 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5.9"
+  configs:
+    Debug:
+      ONLY_ACTIVE_ARCH: true
+    Release:
+      ONLY_ACTIVE_ARCH: false
 
 targets:
   ClaudeWatch:
@@ -40,6 +45,7 @@ targets:
         PRODUCT_NAME: Claude Watch
         GENERATE_INFOPLIST_FILE: false
         SUPPORTS_MACCATALYST: false
+        ARCHS: "$(ARCHS_STANDARD)"
 
 schemes:
   ClaudeWatch:

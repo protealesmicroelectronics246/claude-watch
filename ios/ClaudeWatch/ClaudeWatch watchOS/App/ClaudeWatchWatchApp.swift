@@ -40,4 +40,5 @@ struct ClaudeWatchWatchApp: App {
             .environmentObject(sessionManager)
         }
     }
+
 }
